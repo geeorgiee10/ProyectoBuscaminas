@@ -12,10 +12,3 @@ ScriptedImporter:
   wrapperCodePath: 
   wrapperClassName: 
   wrapperCodeNamespace: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 179529
-  packageName: Minesweeping - Game Template
-  packageVersion: 
-  assetPath: Assets/InputSystem_Actions.inputactions
-  uploadId: 0

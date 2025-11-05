@@ -1,17 +1,15 @@
-using System;
 using TMPro;
-using Unity.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
-public class Piece : MonoBehaviour
+public class Piece : MonoBehaviour, IPointerClickHandler
 {
-
-
-    [SerializeField] private int x, y;
-    [SerializeField] private bool bomb, check, isFlag;
-    [SerializeField] private GameObject bombSprite, flagSprite;
+       
     
-
+    [SerializeField] private int x, y;
+    [SerializeField] private bool bomb, check;
+    public bool endgame;
 
     public void setX(int x)
     {
@@ -28,13 +26,11 @@ public class Piece : MonoBehaviour
         this.bomb = bomb;
     }
 
-    public bool isBomb()
-    {
+    public bool isBomb() { 
         return bomb;
     }
 
-    public int getX()
-    {
+    public int getX() {
         return x;
     }
 
@@ -43,6 +39,7 @@ public class Piece : MonoBehaviour
         return y;
     }
 
+    
     public void setCheck(bool v)
     {
         this.check = v;
@@ -53,79 +50,106 @@ public class Piece : MonoBehaviour
         return check;
     }
 
+
     public void DrawBomb()
     {
-        if (!isCheck() && !isFlag)
+        if (!isCheck())
         {
             setCheck(true);
+            GameManager.instance.checkConuter++;
 
             if (isBomb())
             {
-                GetComponent<SpriteRenderer>().material.color = Color.red;
-                // AÃ±adir Sprite de bomba
-                bombSprite.SetActive(true);
 
-                GameManager.instance.endMenu.SetActive(true);
-
-                Generator.gen.ShowAllMap();
-
-                GameManager.instance.endgame = true;
+                GetComponent<SpriteRenderer>().material.color = new Color(0.5f, 0.5f, 0.5f);
+                transform.GetChild(1).gameObject.SetActive(true);
+                if (!GameManager.instance.endgame)
+                {
+                    transform.GetChild(2).gameObject.SetActive(true);
+                    GameManager.instance.endMenu.SetActive(true);
+                    GameManager.instance.win = false;
+                    GameManager.instance.EndGame();
+                }
+                    
                 
             }
             else
             {
+                // Cambiar color casilla porque ya está comprobada
+                GetComponent<SpriteRenderer>().material.color = new Color(0.9f, 0.9f, 0.9f);
 
-                int bombsNumber = Generator.gen.GetBombsAround(x, y);
+                int bombsNumer = Generator.gen.GetBombsAround(x, y);
 
-                if (bombsNumber != 0)
+
+                if (bombsNumer != 0)
                 {
-                    transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = bombsNumber.ToString();
+                    transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = bombsNumer.ToString();
                 }
                 else
                 {
-                    // Cambiar color casilla porque ya esta comprobadas
-                    GetComponent<SpriteRenderer>().material.color = Color.gray;
                     Generator.gen.CheckPieceAround(x, y);
                 }
 
-            }
-        }
 
+                if (GameManager.instance.checkConuter == (Generator.gen.width * Generator.gen.height) - Generator.gen.bombsNumber)
+                {
+                    GameManager.instance.EndGame();
+                }
 
-    }
-
-    // Dibujar bandera con el boton secundario
-    public void drawFlag()
-    {
-        if (isCheck())
-            return;
-
-        isFlag = !isFlag;
-        flagSprite.SetActive(isFlag);
-    }
-
-
-    private void OnMouseOver()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (!GameManager.instance.endgame)
-            {
-                DrawBomb();
             }
             
-        }
-        else if (Input.GetMouseButtonDown(1))
-        {
-            if (!GameManager.instance.endgame)
-            {
-                drawFlag();
-            }
-            
-        }
+
+        } 
         
     }
+
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            OnLeftClick();
+        }
+        else if (eventData.button == PointerEventData.InputButton.Right)
+        {
+            OnRightClick();
+        }
+
+    }
+
+
+
+    // Dibujar bandera
+    public void DrawFlag()
+    {
+        transform.GetChild(3).gameObject.SetActive(!transform.GetChild(3).gameObject.activeSelf);
+        if (transform.GetChild(3).gameObject.activeSelf)
+        {
+            GameManager.instance.flagCounter++;
+        }
+        else
+        {
+            GameManager.instance.flagCounter--;
+        }
+    }
+
+    // Input Manager
+    public void OnLeftClick()
+    {
+        DrawBomb();
+    }
+
+
+    public void OnRightClick()
+    {
+        if (!GameManager.instance.endgame)
+            DrawFlag();
+   }
+
     
+
+
     
 
 }
