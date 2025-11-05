@@ -9,6 +9,7 @@ public class Piece : MonoBehaviour, IPointerClickHandler
     
     [SerializeField] private int x, y;
     [SerializeField] private bool bomb, check;
+    [SerializeField] private bool flag = false;
     public bool endgame;
 
     public void setX(int x)
@@ -50,6 +51,11 @@ public class Piece : MonoBehaviour, IPointerClickHandler
         return check;
     }
 
+    public bool isFlag()
+    {
+        return flag;
+    }
+
 
     public void DrawBomb()
     {
@@ -75,7 +81,7 @@ public class Piece : MonoBehaviour, IPointerClickHandler
             }
             else
             {
-                // Cambiar color casilla porque ya está comprobada
+                // Cambiar color casilla porque ya estï¿½ comprobada
                 GetComponent<SpriteRenderer>().material.color = new Color(0.9f, 0.9f, 0.9f);
 
                 int bombsNumer = Generator.gen.GetBombsAround(x, y);
@@ -123,8 +129,10 @@ public class Piece : MonoBehaviour, IPointerClickHandler
     // Dibujar bandera
     public void DrawFlag()
     {
+        flag = !flag;
+
         transform.GetChild(3).gameObject.SetActive(!transform.GetChild(3).gameObject.activeSelf);
-        if (transform.GetChild(3).gameObject.activeSelf)
+        if (flag)
         {
             GameManager.instance.flagCounter++;
         }

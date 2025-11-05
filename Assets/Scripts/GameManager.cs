@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject startMenu;
     public GameObject endMenu;
+    public GameObject buttonBot;
+    
 
     public int flagCounter = 0;
     public int checkConuter = 0;
@@ -35,9 +37,16 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);    
         startMenu.SetActive(true);
         endMenu.SetActive(false);
-       
+        buttonBot.SetActive(false);
     }
 
+
+    public void BotStart()
+    {
+        buttonBot.SetActive(false);
+        AIController ai = gameObject.AddComponent<AIController>();
+        ai.Start();
+    }
 
     public void GameStart()
     {
@@ -52,6 +61,7 @@ public class GameManager : MonoBehaviour
         if (Generator.gen.Validate() == 0) {
             Generator.gen.Generate();
             startMenu.SetActive(false);
+            buttonBot.SetActive(true);
         }
         else
         {
