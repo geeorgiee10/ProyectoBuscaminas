@@ -76,13 +76,13 @@ public class AIController : MonoBehaviour
                 {
                     
                 // Regla 1: todas ocultas son minas: click_derecho (Flag) 
-                    if(regla1(piece)){
+                    if(Regla1(piece)){
                         action = true;
                     }
 
                     // Regla 2: todas ocultas son seguras: clic_izquierdo (Flag)
 
-                    if(regla2(piece)){
+                    if(Regla2(piece)){
                         action = true;
                     }
                 }
@@ -116,37 +116,28 @@ public class AIController : MonoBehaviour
     public int piezasNoCheckeadasAlrededor(int x, int y)
     {
         int cont = 0;
-        // Arriba izquierda
-        if (x > 0 && y < height - 1 && !map[x - 1][y + 1].GetComponent<Piece>().isCheck() && !map[x - 1][y + 1].GetComponent<Piece>().isFlag())
-            cont++;
-        // Arriba
-        if (y < height - 1 && !map[x][y + 1].GetComponent<Piece>().isCheck() && !map[x][y + 1].GetComponent<Piece>().isFlag())
-            cont++;
-        //Arriba derecha
-        if (x < width - 1 && y < height - 1 && !map[x + 1][y + 1].GetComponent<Piece>().isCheck() && !map[x + 1][y + 1].GetComponent<Piece>().isFlag())
-            cont++;
-        // Izquierda
-        if (x > 0 && !map[x - 1][y].GetComponent<Piece>().isCheck() && !map[x - 1][y].GetComponent<Piece>().isFlag())
-            cont++;
-        // Derecha
-        if (x < width - 1 && !map[x + 1][y].GetComponent<Piece>().isCheck() && !map[x + 1][y].GetComponent<Piece>().isFlag())
-            cont++;
-        //Abajo Izquierda
-        if (x > 0 && y > 0 && !map[x - 1][y - 1].GetComponent<Piece>().isCheck() && !map[x - 1][y - 1].GetComponent<Piece>().isFlag())
-            cont++;
-        //Abajo
-        if (y > 0 && !map[x][y - 1].GetComponent<Piece>().isCheck() && !map[x][y - 1].GetComponent<Piece>().isFlag())
-            cont++;
-        //Abajo Derecha
-        if (x < width - 1 && y > 0 && !map[x + 1][y - 1].GetComponent<Piece>().isCheck() && !map[x + 1][y - 1].GetComponent<Piece>().isFlag())
-            cont++;
+        
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue;
+                int nx = x + dx;
+                int ny = y + dy;
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                {
+                    if (!map[nx][ny].GetComponent<Piece>().isCheck())
+                        cont++;
+                }
+            }
+        }
 
 
         return cont;
     }
     
 
-    public bool regla1(GameObject piece)
+    public bool Regla1(GameObject piece)
     {
         bool accion = false;
 
@@ -155,6 +146,7 @@ public class AIController : MonoBehaviour
             int y = piece.GetComponent<Piece>().getY();
 
             int numBombsAround = Generator.gen.GetBombsAround(x, y);
+
 
             int numPiecesNotCheckedAround = piezasNoCheckeadasAlrededor(x, y);
 
@@ -214,7 +206,7 @@ public class AIController : MonoBehaviour
         return accion;
     }
 
-    public bool regla2(GameObject piece)
+    public bool Regla2(GameObject piece)
     {
         bool accion = false;
 
@@ -226,42 +218,42 @@ public class AIController : MonoBehaviour
 
             int flagsAround = 0;
 
-            if (x > 0 && y < height - 1 && !map[x - 1][y + 1].GetComponent<Piece>().isFlag()){
+            if (x > 0 && y < height - 1 && map[x - 1][y + 1].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             // Arriba
-            if (y < height - 1 && !map[x][y + 1].GetComponent<Piece>().isFlag()){
+            if (y < height - 1 && map[x][y + 1].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             //Arriba derecha
-            if (x < width - 1 && y < height - 1 && !map[x + 1][y + 1].GetComponent<Piece>().isFlag()){
+            if (x < width - 1 && y < height - 1 && map[x + 1][y + 1].GetComponent<Piece>().isFlag()){
                flagsAround++;
             }
                     
             // Izquierda
-            if (x > 0 && !map[x - 1][y].GetComponent<Piece>().isFlag()){
+            if (x > 0 && map[x - 1][y].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             // Derecha
-            if (x < width - 1 && !map[x + 1][y].GetComponent<Piece>().isFlag()){
+            if (x < width - 1 && map[x + 1][y].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             //Abajo Izquierda
-            if (x > 0 && y > 0 && !map[x - 1][y - 1].GetComponent<Piece>().isFlag()){
+            if (x > 0 && y > 0 && map[x - 1][y - 1].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             //Abajo
-            if (y > 0 && !map[x][y - 1].GetComponent<Piece>().isFlag()){
+            if (y > 0 && map[x][y - 1].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
                     
             //Abajo Derecha
-            if (x < width - 1 && y > 0 && !map[x + 1][y - 1].GetComponent<Piece>().isFlag()){
+            if (x < width - 1 && y > 0 && map[x + 1][y - 1].GetComponent<Piece>().isFlag()){
                 flagsAround++;
             }
 
