@@ -112,9 +112,10 @@ public class Piece : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (GameManager.instance.endgame) return;
+        if (GameManager.instance.endgame) 
+            return;
 
-        if (!AIController.instance.isPlayerTurn)
+        if (AIController.instance != null && !AIController.instance.isPlayerTurn)
             return;
 
         if (eventData.button == PointerEventData.InputButton.Left)
@@ -126,7 +127,8 @@ public class Piece : MonoBehaviour, IPointerClickHandler
             OnRightClick();
         }
 
-        AIController.instance.CambiarTurno();
+        if (AIController.instance != null)
+            AIController.instance.CambiarTurno();
 
     }
 
