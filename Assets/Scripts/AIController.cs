@@ -15,6 +15,14 @@ public class AIController : MonoBehaviour
 
     public int height, width;
 
+    public static AIController instance;
+    public bool isPlayerTurn = true;
+
+    void Awake()
+    {
+        instance = this;
+    }
+
 
     // El Bot comienza a Jugar. Este Código no hay que cambiarlo
     public void Start()
@@ -22,10 +30,17 @@ public class AIController : MonoBehaviour
         map = Generator.gen.map;
         height = Generator.gen.height;
         width = Generator.gen.width;
-        StartCoroutine(Play());
+        
     }
 
-    
+    public void BotPlay()
+    {
+        map = Generator.gen.map;
+        height = Generator.gen.height;
+        width = Generator.gen.width;
+
+        StartCoroutine(Play());
+    }
 
 
     System.Collections.IEnumerator Play()
@@ -91,7 +106,7 @@ public class AIController : MonoBehaviour
         return action;
     }
 
-    void RandomPlay()
+    bool RandomPlay()
     {
         // De todas las celdas que no se han chequeado, click_izquierdo en una de forma aleatoria;
         List<GameObject> piecesNotChecked = new List<GameObject>();
@@ -106,11 +121,15 @@ public class AIController : MonoBehaviour
             }
         }
 
-        if(piecesNotChecked.Count != 0)
+        if(piecesNotChecked.Count > 0)
         {
             int aleatorio = Random.Range(0, piecesNotChecked.Count);
             piecesNotChecked[aleatorio].GetComponent<Piece>().OnLeftClick();
+
+            return true; 
         }
+
+        return false;
     }
 
     public int piezasNoCheckeadasAlrededor(int x, int y)
@@ -345,6 +364,50 @@ public class AIController : MonoBehaviour
         
 
         return accion;
+    }
+
+    public void CambiarTurno()
+    {
+        isPlayerTurn = !isPlayerTurn;
+
+        if (!isPlayerTurn && !GameManager.instance.endgame)
+        {
+            StartCoroutine(BotTurn());
+        }
+    }
+
+    System.Collections.IEnumerator BotTurn()
+    {
+        yield return new WaitForSeconds(turnTime); 
+
+        bool actionDone = false;
+
+        mapPieceCheckedWithBombs.Clear();
+
+        for(int j = 0; j < height && !actionDone; j++)
+        {
+            for(int i = 0; i < width && !actionDone; i++)
+            {
+                GameObject piece = map[i][j];
+                if(piece.GetComponent<Piece>().isCheck() && Generator.gen.GetBombsAround(i,j) != 0)
+                {
+                    mapPieceCheckedWithBombs.Add(piece);
+
+                    if (Regla1(piece) || Regla2(piece))
+                    {
+                        actionDone = true;
+                        break; 
+                    }
+                }
+            }
+        }
+
+        if (!actionDone)
+        {
+            RandomPlay();
+        }
+
+        isPlayerTurn = true;
     }
 }
 
