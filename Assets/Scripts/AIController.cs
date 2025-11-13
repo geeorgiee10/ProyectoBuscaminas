@@ -372,7 +372,9 @@ public class AIController : MonoBehaviour
 
         if (!isPlayerTurn && !GameManager.instance.endgame)
         {
+            Debug.Log("Turno del bot");
             StartCoroutine(BotTurn());
+            Debug.Log("Turno del jugador");
         }
     }
 
